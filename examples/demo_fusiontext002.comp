@@ -1,0 +1,973 @@
+Composition {
+	CurrentTime = 1017,
+	RenderRange = { 1001, 1075 },
+	GlobalRange = { 1001, 1100 },
+	CurrentID = 171,
+	HiQ = true,
+	PlaybackUpdateMode = 0,
+	Version = "Fusion Studio 9.0.2 build 15",
+	SavedOutputs = 2,
+	HeldTools = 0,
+	DisabledTools = 0,
+	LockedTools = 0,
+	AudioOffset = 0,
+	Resumable = true,
+	OutputClips = {
+	},
+	Tools = {
+		NumberMin2 = Fuse.NumberMin {
+			Inputs = {
+				Number1 = Input {
+					SourceOp = "TextLength1",
+					Source = "Output",
+				},
+				Number2 = Input {
+					SourceOp = "NumberFloor1_2",
+					Source = "Output",
+				},
+				ShowInput = Input { Value = 1, },
+			},
+			ViewInfo = OperatorInfo { Pos = { 990, -16.5 } },
+		},
+		NumberClamp1 = Fuse.NumberClamp {
+			Inputs = {
+				Number = Input {
+					SourceOp = "NumberMin2",
+					Source = "Output",
+				},
+				Minimum = Input {
+					SourceOp = "TextLength1",
+					Source = "Output",
+				},
+			},
+			ViewInfo = OperatorInfo { Pos = { 990, 49.5 } },
+		},
+		TextSub1 = Fuse.TextSub {
+			Inputs = {
+				Text = Input {
+					SourceOp = "Text_END",
+					Source = "Output",
+				},
+				End = Input {
+					SourceOp = "NumberClamp1",
+					Source = "Output",
+				},
+			},
+			ViewInfo = OperatorInfo { Pos = { 990, 82.5 } },
+		},
+		NumberEasing1 = Fuse.NumberEasing {
+			Inputs = {
+				StartTime = Input { Value = 1025, },
+				CurrentTime = Input {
+					Value = 1017,
+					Expression = "time",
+				},
+				Duration = Input {
+					SourceOp = "GEN",
+					Source = "Output",
+				},
+				Way = Input { Value = FuID { "out" }, },
+				ShowInput = Input { Value = 1, },
+			},
+			ViewInfo = OperatorInfo { Pos = { 660, -148.5 } },
+			Colors = {
+				TileColor = { R = 0, G = 0.666666666666667, B = 1 },
+				TextColor = { R = 0, G = 0, B = 0 },
+			}
+		},
+		Text_END = Fuse.TextCreate {
+			NameSet = true,
+			CurrentSettings = 5,
+			CustomData = {
+				Settings = {
+					[1] = {
+						Tools = ordered() {
+							Text_END = Fuse.TextCreate {
+								Inputs = {
+									Text = Input { Value = "TYPE" }
+								},
+								CtrlWZoom = false,
+								NameSet = true,
+								ViewInfo = OperatorInfo { Pos = { 770, 82.5 } },
+								CustomData = {
+								}
+							}
+						}
+					},
+					[2] = {
+						Tools = ordered() {
+							Text_END = Fuse.TextCreate {
+								Inputs = {
+									Text = Input { Value = "SLEEP" }
+								},
+								CtrlWZoom = false,
+								NameSet = true,
+								ViewInfo = OperatorInfo { Pos = { 770, 82.5 } },
+								CustomData = {
+								}
+							}
+						}
+					},
+					[3] = {
+						Tools = ordered() {
+							Text_END = Fuse.TextCreate {
+								Inputs = {
+									Text = Input { Value = "REPEAT" }
+								},
+								CtrlWZoom = false,
+								NameSet = true,
+								ViewInfo = OperatorInfo { Pos = { 770, 82.5 } },
+								CustomData = {
+								}
+							}
+						}
+					},
+					[4] = {
+						Tools = ordered() {
+							Text_END = Fuse.TextCreate {
+								Inputs = {
+									Text = Input { Value = "LESS" }
+								},
+								CtrlWZoom = false,
+								NameSet = true,
+								ViewInfo = OperatorInfo { Pos = { 770, 82.5 } },
+								CustomData = {
+								}
+							}
+						}
+					},
+				}
+			},
+			Inputs = {
+				Text = Input { Value = "LESS", },
+			},
+			ViewInfo = OperatorInfo { Pos = { 770, 82.5 } },
+			Colors = {
+				TileColor = { R = 0, G = 0.666666666666667, B = 1 },
+				TextColor = { R = 0, G = 0, B = 0 },
+			}
+		},
+		TextLength1 = Fuse.TextLength {
+			Inputs = {
+				Text = Input {
+					SourceOp = "Text_END",
+					Source = "Output",
+				},
+			},
+			ViewInfo = OperatorInfo { Pos = { 880, 16.5 } },
+		},
+		NumberMax1 = Fuse.NumberMax {
+			Inputs = {
+				Number1 = Input {
+					SourceOp = "TextLength1_1",
+					Source = "Output",
+				},
+				Number2 = Input {
+					SourceOp = "TextLength1",
+					Source = "Output",
+				},
+			},
+			ViewInfo = OperatorInfo { Pos = { 220, -115.5 } },
+		},
+		NumberAdd1_1 = Fuse.NumberAdd {
+			Inputs = {
+				Term1 = Input {
+					SourceOp = "NumberMax1",
+					Source = "Output",
+				},
+				Term2 = Input { Value = 1, },
+				ShowInput = Input { Value = 1, },
+			},
+			ViewInfo = OperatorInfo { Pos = { 330, -115.5 } },
+		},
+		NumberMultiply2 = Fuse.NumberMultiply {
+			Inputs = {
+				Factor1 = Input {
+					SourceOp = "NumberAdd1_1",
+					Source = "Output",
+				},
+				Factor2 = Input {
+					SourceOp = "FrameStep",
+					Source = "Output",
+				},
+				ShowInput = Input { Value = 1, },
+			},
+			ViewInfo = OperatorInfo { Pos = { 440, -115.5 } },
+		},
+		GEN = PipeRouter {
+			NameSet = true,
+			Inputs = {
+				Input = Input {
+					SourceOp = "NumberMultiply2",
+					Source = "Output",
+				},
+			},
+			ViewInfo = PipeRouterInfo { Pos = { 550, -115.5 } },
+		},
+		NumberMultiply1 = Fuse.NumberMultiply {
+			Inputs = {
+				Factor1 = Input {
+					SourceOp = "NumberEasing1",
+					Source = "Output",
+				},
+				Factor2 = Input {
+					SourceOp = "GEN",
+					Source = "Output",
+				},
+				ShowInput = Input { Value = 1, },
+			},
+			ViewInfo = OperatorInfo { Pos = { 660, -82.5 } },
+		},
+		NumberFloor2 = Fuse.NumberFloor {
+			Inputs = {
+				Number = Input {
+					SourceOp = "NumberMultiply1",
+					Source = "Output",
+				},
+				ShowInput = Input { Value = 1, },
+			},
+			ViewInfo = OperatorInfo { Pos = { 770, -115.5 } },
+		},
+		NumberDivide1_2 = Fuse.NumberDivide {
+			CustomData = {
+				connectedOutputs = {
+				},
+			},
+			Inputs = {
+				Numerator = Input {
+					SourceOp = "NumberFloor2",
+					Source = "Output",
+				},
+				Denominator = Input {
+					SourceOp = "FrameStep",
+					Source = "Output",
+				},
+				ShowInput = Input { Value = 1, },
+			},
+			ViewInfo = OperatorInfo { Pos = { 880, -115.5 } },
+		},
+		NumberFloor1_2 = Fuse.NumberFloor {
+			Inputs = {
+				Number = Input {
+					SourceOp = "NumberDivide1_2",
+					Source = "Output",
+				},
+				ShowInput = Input { Value = 1, },
+			},
+			ViewInfo = OperatorInfo { Pos = { 990, -115.5 } },
+		},
+		NumberAdd3 = Fuse.NumberAdd {
+			Inputs = {
+				Term1 = Input {
+					SourceOp = "NumberFloor1_2",
+					Source = "Output",
+				},
+				Term2 = Input { Value = 1, },
+				ShowInput = Input { Value = 1, },
+			},
+			ViewInfo = OperatorInfo { Pos = { 1430, -115.5 } },
+		},
+		NumberMin2_1 = Fuse.NumberMin {
+			Inputs = {
+				Number1 = Input {
+					SourceOp = "NumberAdd1",
+					Source = "Output",
+				},
+				Number2 = Input {
+					SourceOp = "NumberAdd3",
+					Source = "Output",
+				},
+				ShowInput = Input { Value = 1, },
+			},
+			ViewInfo = OperatorInfo { Pos = { 1430, -49.5 } },
+		},
+		Text_START = Fuse.TextCreate {
+			NameSet = true,
+			CurrentSettings = 4,
+			CustomData = {
+				Settings = {
+					[1] = {
+						Tools = ordered() {
+							Text_START = Fuse.TextCreate {
+								Inputs = {
+									Text = Input { Value = "BE" }
+								},
+								CtrlWZoom = false,
+								NameSet = true,
+								ViewInfo = OperatorInfo { Pos = { 1100, 49.5 } },
+								CustomData = {
+								}
+							}
+						}
+					},
+					[2] = {
+						Tools = ordered() {
+							Text_START = Fuse.TextCreate {
+								Inputs = {
+									Text = Input { Value = "MORE" }
+								},
+								CtrlWZoom = false,
+								NameSet = true,
+								ViewInfo = OperatorInfo { Pos = { 1100, 49.5 } },
+								CustomData = {
+								}
+							}
+						}
+					},
+					[3] = {
+						Tools = ordered() {
+							Text_START = Fuse.TextCreate {
+								Inputs = {
+									Text = Input { Value = "CAVALRY" }
+								},
+								CtrlWZoom = false,
+								NameSet = true,
+								ViewInfo = OperatorInfo { Pos = { 1100, 49.5 } },
+								CustomData = {
+								}
+							}
+						}
+					},
+					[4] = {
+						Tools = ordered() {
+							Text_START = Fuse.TextCreate {
+								Inputs = {
+									Text = Input { Value = "SUCK" }
+								},
+								Name = "Text_START",
+								CtrlWZoom = false,
+								NameSet = true,
+								ViewInfo = OperatorInfo { Pos = { 1100, 49.5 } },
+								CustomData = {
+								}
+							}
+						}
+					},
+				}
+			},
+			Inputs = {
+				Text = Input { Value = "SUCK", },
+			},
+			ViewInfo = OperatorInfo { Pos = { 1100, 49.5 } },
+			Colors = {
+				TileColor = { R = 0, G = 0.666666666666667, B = 1 },
+				TextColor = { R = 0, G = 0, B = 0 },
+			}
+		},
+		TextLength1_1 = Fuse.TextLength {
+			Inputs = {
+				Text = Input {
+					SourceOp = "Text_START",
+					Source = "Output",
+				},
+			},
+			ViewInfo = OperatorInfo { Pos = { 1210, -16.5 } },
+		},
+		NumberAdd1 = Fuse.NumberAdd {
+			Inputs = {
+				Term1 = Input {
+					SourceOp = "TextLength1_1",
+					Source = "Output",
+				},
+				Term2 = Input { Value = 1, },
+				ShowInput = Input { Value = 1, },
+			},
+			ViewInfo = OperatorInfo { Pos = { 1320, -16.5 } },
+		},
+		NumberClamp1_1 = Fuse.NumberClamp {
+			Inputs = {
+				Number = Input {
+					SourceOp = "NumberMin2_1",
+					Source = "Output",
+				},
+				Maximum = Input {
+					SourceOp = "NumberAdd1",
+					Source = "Output",
+				},
+			},
+			ViewInfo = OperatorInfo { Pos = { 1430, 16.5 } },
+		},
+		TextSub1_2 = Fuse.TextSub {
+			Inputs = {
+				Text = Input {
+					SourceOp = "Text_START",
+					Source = "Output",
+				},
+				Start = Input {
+					SourceOp = "NumberClamp1_1",
+					Source = "Output",
+				},
+			},
+			ViewInfo = OperatorInfo { Pos = { 1430, 49.5 } },
+		},
+		TextJoin1 = Fuse.TextJoin {
+			Inputs = {
+				Which = Input { Value = 1, },
+				Text1 = Input {
+					SourceOp = "TextSub1",
+					Source = "Output",
+				},
+				Text2 = Input {
+					SourceOp = "TextSub1_2",
+					Source = "Output",
+				},
+			},
+			ViewInfo = OperatorInfo { Pos = { 1430, 82.5 } },
+		},
+		TEXTANIM = PipeRouter {
+			NameSet = true,
+			Inputs = {
+				Input = Input {
+					SourceOp = "TextJoin1",
+					Source = "Output",
+				},
+			},
+			ViewInfo = PipeRouterInfo { Pos = { 1650, 82.5 } },
+		},
+		PREVIEW_ME = TextPlus {
+			NameSet = true,
+			Inputs = {
+				GlobalIn = Input { Value = 1001, },
+				GlobalOut = Input { Value = 1100, },
+				Width = Input { Value = 1920, },
+				Height = Input { Value = 1080, },
+				["Gamut.SLogVersion"] = Input { Value = FuID { "SLog2" }, },
+				Font = Input { Value = "Open Sans", },
+				StyledText = Input {
+					SourceOp = "TEXTANIM",
+					Source = "Output",
+				},
+				Style = Input { Value = "Bold", },
+				ManualFontKerningPlacement = Input {
+					Value = StyledText {
+						Array = {
+						},
+						Value = ""
+					},
+				},
+			},
+			ViewInfo = OperatorInfo { Pos = { 1925, 82.5 } },
+		},
+		FrameStep = Fuse.NumberCreate {
+			CtrlWZoom = false,
+			NameSet = true,
+			Inputs = {
+				Number = Input { Value = 2, },
+			},
+			ViewInfo = OperatorInfo { Pos = { 660, -280.5 } },
+			Colors = {
+				TileColor = { R = 0, G = 0.666666666666667, B = 1 },
+				TextColor = { R = 0, G = 0, B = 0 },
+			}
+		}
+	},
+	Views = {
+		{
+			FrameTypeID = "ChildFrame",
+			Mode = 3,
+			LayoutPreset = 0,
+			Left = 0,
+			Top = 27,
+			Width = 2560,
+			Height = 1283,
+			Views = ordered() {
+				Main = MultiView {
+					Active = "Flow",
+					ViewList = ordered() {
+						Flow = "FlowView",
+						Console = "ConsoleView",
+						Timeline = "TimelineView",
+						Spline = "SplineEditorView",
+						Info = "InfoView",
+						Chat = "ChatView"
+					},
+					Flow = FlowView {
+						Flags = {
+							AutoHideNavigator = true,
+							GridSnap = true,
+							AutoSnap = true,
+							ShowInstance = false,
+							FullIndicator = true
+						},
+						NavigatorSize = { 200, 140 },
+						Direction = "Horizontal",
+						PipeStyle = "Direct",
+						Scale = 1,
+						Offset = { -25, 325 }
+					},
+					Timeline = TimelineView {
+						TreeControlState = {
+						},
+						DisplayMode = "All Tools",
+						ShowCurrentTimeTools = false,
+						Filter = "Show All",
+						ShowSelectedTools = false,
+						ShowAnimatedToolsOnly = false,
+						ShowEditBoxes = false,
+						KeyFrameView = {
+							Position = { Left = 150, Bottom = 343 },
+							ScaleX = 0.212280701754386,
+							OffsetX = 995.596491228072,
+							OffsetY = 0,
+							AutoScaling = "scroll",
+							AutoSnapTo = "frame",
+							AutoSnapToGuidelines = false,
+							GuidelinesGrabEnabled = true,
+							GuidelinesSnapTo = "frame"
+						},
+						Spreadsheet = { LeftPos = 150, Visible = false }
+					},
+					Spline = SplineEditorView {
+						LeftPos = 256,
+						ScaleX = 0.2,
+						ScaleY = 0.00338983050847458,
+						OffsetX = 974.199999999999,
+						OffsetY = 0,
+						AutoScaling = "scroll",
+						AutoSnapTo = "frame",
+						AutoSnapToGuidelines = false,
+						GuidelinesSnapTo = "frame",
+						ShowKeyMarkers = false,
+						IndependentHandles = false,
+						ShowNonSplineModifiers = false,
+						GuidelinesGrabEnabled = true,
+						ShowOneToolOnly = false,
+						ShowSelectedTools = true,
+						ShowAllInputs = false,
+						Filter = "Show All"
+					},
+				},
+				Controls = MultiView {
+					Active = "Tools",
+					ViewList = ordered() {
+						Tools = "ControlView",
+						Modifiers = "ModifierView"
+					},
+				},
+				Left = "PreviewContainer",
+				Right = "PreviewContainer",
+				Transport = "TransportView",
+				Time = "TimeView"
+			},
+			Layout = {
+				Columns = 2,
+				RatioX = 1,
+				RatioY = 1,
+				{
+					Rows = 3,
+					RatioX = 0.865362035225049,
+					RatioY = 0.0101483216237315,
+					{
+						Columns = 2,
+						RatioX = 1,
+						RatioY = 0.592156862745098,
+						{ ID = "Left", RatioX = 1, RatioY = 106.14266487214, Pop = true },
+						{ ID = "Right", RatioX = -2, Pop = true },
+						Pop = true
+					},
+					{ ID = "Main", RatioY = 0.362352941176471, Pop = true },
+					{ ID = "Time", SnapY = 56, Flat = true }
+				},
+				{
+					Rows = 2,
+					PixelX = 342,
+					{ ID = "Controls", RatioX = 1, RatioY = 1 },
+					{ ID = "Transport", FixedY = -2 }
+				}
+			}
+		}
+	},
+	Prefs = {
+		Comp = {
+			Memory = {
+				FramesAtOnce = 4,
+				Render = {
+					SimultaneousBranching = true
+				},
+				Interactive = {
+					SimultaneousBranching = true,
+				}
+			},
+			NumberStyles = {
+				ClipFrame = 1
+			},
+			Views = {
+				Right = {
+					Viewer = {
+						ScaleMode = 1,
+					},
+					SideB = {
+						PrevCtrlInactiveColor = 4278255360,
+						PickW = 1,
+						PickH = 1,
+						PrevCtrlActiveColor = 4278190335,
+						Viewer = {
+							EnableLUTs = false,
+							LUTPlugin = "FusionViewLUT",
+							FitMarginY = 0,
+							FitMarginX = 0,
+							FitMarginType = 0,
+							FarZ = -1000,
+							NearZ = 0
+						}
+					},
+				},
+				Left = {
+					Viewer = {
+						EnableLUTs = true,
+						LUTPlugin = "GamutViewLUT",
+						ScaleMode = 1,
+					},
+					SideB = {
+						PrevCtrlInactiveColor = 4278255360,
+						PickW = 1,
+						PickH = 1,
+						PrevCtrlActiveColor = 4278190335,
+						Viewer = {
+							EnableLUTs = false,
+							LUTPlugin = "FusionViewLUT",
+							FitMarginY = 0,
+							FitMarginX = 0,
+							FitMarginType = 0,
+							FarZ = -1000,
+							NearZ = 0
+						}
+					},
+				},
+				View1 = {
+					PrevCtrlInactiveColor = 0,
+					FullScreen = false,
+					SideB = {
+						PrevCtrlInactiveColor = 4278255360,
+						PickW = 1,
+						PickH = 1,
+						PrevCtrlActiveColor = 4278190335,
+						Viewer = {
+							EnableLUTs = false,
+							LUTPlugin = "FusionViewLUT",
+							FitMarginY = 0,
+							FitMarginX = 0,
+							FitMarginType = 0,
+							FarZ = -1000,
+							NearZ = 0
+						}
+					},
+					PickH = 1,
+					PrevCtrlActiveColor = 0,
+					AlwaysOnTop = true,
+					PickW = 1
+				},
+				View2 = {
+					PickH = 1,
+					AlwaysOnTop = true,
+					FullScreen = false,
+					PickW = 1
+				},
+				LeftView = {
+					MaterialViewer = {
+						Options = {
+							LightPosition = 0,
+							SurfaceType = 0,
+							RendererType = "RendererOpenGL",
+							LightingEnabled = true,
+							TextureDepth = "int8"
+						},
+						Camera = {
+							Rotation = {
+								Y = -20,
+								X = 15,
+								Z = 0
+							}
+						}
+					},
+					PrevCtrlInactiveColor = 4278255360,
+					CheckerUnderlay = false,
+					Viewer = {
+						EnableLUTs = false,
+						LUTSelected = "",
+						FollowActive = false,
+						CheckerUnderlay = true,
+						Normalise = false,
+						NearZ = 0,
+						ID = "GLImageViewer",
+						OverlayColor = 7,
+						One2One = false,
+						Smooth = true,
+						SmoothThreshold = 1000000,
+						AlphaOverlay = false,
+						View360 = 0,
+						Region = {
+							Show = true,
+							Lock = false,
+							Auto = false,
+							Bottom = 0,
+							Enable = false,
+							Right = 1,
+							Left = 0,
+							Top = 1
+						},
+						ShowControls = true,
+						Layer = "",
+						ScaleMode = 0,
+						ShowLabels = true,
+						OverlayOpacity = 100,
+						PixelGrid = false,
+						LUTPlugin = "FusionViewLUT",
+						Channel = -1,
+						DoD = {
+							Show = false
+						},
+						FitMarginX = 0,
+						FarZ = -1000,
+						FitMarginY = 0
+					},
+					BgColor = -1,
+					SubView = {
+						Enabled = false,
+						Navigator = false,
+						Magnifier = false,
+						ID = "GLHistogramViewer",
+						MagnifierScale = 8
+					},
+					FullScreen = false,
+					Guides = {
+						Show = false,
+						Center = true,
+						SafeTitle = true,
+						SafeImage = true,
+						FrameAspect = "Default",
+						Film = false
+					},
+					Controls = {
+						Hiding = 0,
+						Autofade = false,
+						FadeSpeed = 1,
+						SnapPixel = false,
+						Opacity = 100,
+						FadeDelay = 2000,
+						SnapPixelMode = 0,
+						StippleHidden = true
+					},
+					QuadLayoutName = "4-Way",
+					AlwaysOnTop = true,
+					QuadView = false,
+					Waveform = {
+						OneLine = false,
+						SubSampling = 4,
+						Mode = 0,
+						LoopLines = true,
+						ColorSpace = 0
+					},
+					Dither = false,
+					PickW = 1,
+					Vectorscope = {
+						DrawStyles = 1,
+						OneLine = false,
+						Color = false,
+						LoopLines = true,
+						SubSampling = 4,
+						ColorSpace = 0
+					},
+					PickH = 1,
+					VideoOut = false,
+					Toolbar = {
+						Style = 0,
+						Size = 0
+					},
+					Mirror = {
+						Enable = false,
+						StereoMethod = "Auto",
+						Device = ""
+					},
+					View3D = {
+						Options = {
+							SelectionBoxStipple = 65520,
+							ShowTextureMemory = false,
+							Shadows = false,
+							ShowLights = true,
+							Lighting = false,
+							ShowUVTangentVectors = false,
+							ShowPointClouds = true,
+							Grid = true,
+							ShowFastLabel = false,
+							ShowVertexNormals = false,
+							ShowMatteObjects = false,
+							DefaultLight = true,
+							Culling = false,
+							ShowCameras = true,
+							Wireframe = false,
+							SelectionBoxStippleHidden = 52416
+						},
+						CamLeft = {
+							Rotation = {
+								Y = 90,
+								X = 0,
+								Z = 0
+							},
+							Scale = 1,
+							Position = {
+								Y = 0,
+								X = 0,
+								Z = 0
+							}
+						},
+						CamPersp = {
+							Rotation = {
+								Y = 0,
+								X = 30,
+								Z = 0
+							},
+							Scale = 1,
+							Position = {
+								Y = 0,
+								X = 0,
+								Z = 0
+							}
+						},
+						CamRight = {
+							Rotation = {
+								Y = -90,
+								X = 0,
+								Z = 0
+							},
+							Scale = 1,
+							Position = {
+								Y = 0,
+								X = 0,
+								Z = 0
+							}
+						},
+						SortMethod = "ZBuffer",
+						CamFront = {
+							Rotation = {
+								Y = 0,
+								X = 0,
+								Z = 0
+							},
+							Scale = 1,
+							Position = {
+								Y = 0,
+								X = 0,
+								Z = 0
+							}
+						},
+						TextureDepth = "int8",
+						OverscanMode = 0,
+						CustomOverscan = 1.37,
+						CamTop = {
+							Rotation = {
+								Y = 0,
+								X = 90,
+								Z = 0
+							},
+							Scale = 1,
+							Position = {
+								Y = 0,
+								X = 0,
+								Z = 0
+							}
+						},
+						CameraName = "Perspective"
+					},
+					Histogram = {
+						DrawStyles = 0,
+						Channels = 7,
+						Scale = 0,
+						Transparent = false
+					},
+					ShowClipFrameNumbers = true,
+					PrevCtrlActiveColor = 4278190335,
+					["3DHistogram"] = {
+						Proxy = 4,
+						Log = false,
+						Transparent = true,
+						LoopLines = true,
+						DrawStyles = 0
+					},
+					BufferLUT = {
+						Enable = false,
+						Selected = "",
+						Plugin = "FusionViewLUT"
+					},
+					Stereo = {
+						Enabled = false,
+						Swap = false,
+						AnaglyphMethod = "Color",
+						ABSource = false,
+						OffsetX = {
+							QuadB = 0,
+							Stack = 0
+						},
+						OffsetY = {
+							QuadB = 0,
+							Stack = 0
+						},
+						DisplayMethod = "Quad Buffer",
+						Stack = false,
+						StackMethod = "Horizontal",
+						AnaglyphColor = "Red/Cyan"
+					},
+					OpToolbar = {
+						Style = 0,
+						Size = 0
+					}
+				}
+			},
+			Preview = {
+				HiQ = true,
+				SkipFrames = true,
+			},
+			FrameFormat = {
+				Rate = 24,
+				GuideRatio = 1.77777777777778,
+				DepthFull = 3,
+				DepthPreview = 3,
+				DepthInteractive = 3,
+			},
+			LastFile = "R:\\_limbo\\fusionjson-master\\fusionjson-master\\examples\\test.json",
+			Unsorted = {
+				GlobalStart = 1001,
+				GlobalEnd = 1100
+			},
+			AVI = {
+				Preview = {
+					DataCheck = true,
+					Key = 15,
+					Handler = 1668707181,
+					KeyCheck = true,
+					DataRate = 300,
+					Quality = 75
+				}
+			},
+			Tweaks = {
+				GPU = {
+					Enable = 2,
+					Caching = 2
+				},
+				NumBeatTimeouts = 20,
+				DisableCancelIO = false,
+				DisableDirectReads = false,
+				GraphicsMemory = 2048
+			},
+			Paths = {
+				EnableReverseMapping = true,
+			},
+			FlowView = {
+				GridSnap = true,
+				FullToolIndicator = true,
+				ShowInstanceLinks = false,
+				RemoveRouters = false,
+				ShowHidden = false
+			},
+			QuickTime = {
+			},
+			Import = {
+				OMF = {
+					FlowFormat = 0
+				}
+			}
+		}
+	}
+}
+
+ 
