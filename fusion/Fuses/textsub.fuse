@@ -34,10 +34,11 @@ function Create()
         INPID_InputControl = "SliderControl",
         INP_Integer = true,
         TEC_Lines = 1,
-        ICD_Width = 0.5,
+        --ICD_Width = 0.5,
         INP_MinScale = 1,
         INP_MaxScale = 100,
-        INP_Default = 1
+        INP_Default = 1,
+        LINK_Main = 2,
     })
 
     InEnd = self:AddInput("End", "End", {
@@ -45,17 +46,49 @@ function Create()
         INPID_InputControl = "SliderControl",
         INP_Integer = true,
         TEC_Lines = 1,
-        ICD_Width = 0.5,
+        --ICD_Width = 0.5,
         INP_MinScale = -100,
         INP_MaxScale = -1,
         INP_Default = -1,
-        IC_Steps = 1
+        IC_Steps = 1,
+        LINK_Main = 3,
+    })
+
+    InShowInput = self:AddInput("Show Input", "ShowInput", {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "CheckboxControl",
+        INP_Integer = true,
+        INP_Default = 1.0,
+        INP_External = false,
+        INP_DoNotifyChanged = true
     })
 
     OutText = self:AddOutput("Output" , "Output" , {
         LINKID_DataType = "Text",
         LINK_Main = 1
     })
+end
+
+function NotifyChanged(inp, param, time)
+    --[[
+        Handles all input control events.
+
+        :param inp: Input that triggered a signal.
+        :type inp: Input
+
+        :param param: Parameter object holding the (new) value.
+        :type param: Parameter
+
+        :param time: Current frame number.
+        :type time: float
+    ]]
+    if inp == InShowInput then
+        local visible
+        if param.Value == 1.0 then visible = true else visible = false end
+        InText:SetAttrs({LINK_Visible = visible})
+        InStart:SetAttrs({LINK_Visible = visible})
+        InEnd:SetAttrs({LINK_Visible = visible})
+    end
 end
 
 function Process(req)
