@@ -1,0 +1,33 @@
+-- ============================================================================
+-- constants
+-- ============================================================================
+FUSE_NAME = "TextCompFilename"
+DATATYPE = "Text"
+
+-- ============================================================================
+-- fuse
+-- ============================================================================
+FuRegisterClass(FUSE_NAME, CT_Tool, {
+    REGID_DataType = DATATYPE,
+    REGID_InputDataType = DATATYPE,
+    REG_NoCommonCtrls = true,
+    REGS_Category = "Vonk\\Text",
+    REGS_Name = FUSE_NAME,
+    REGS_OpDescription = "Returns the full path of a comp.",
+    REGS_OpIconString = FUSE_NAME
+})
+
+function Create()
+
+    OutText = self:AddOutput("Output" , "Output" , {
+        LINKID_DataType = "Text",
+        LINK_Main = 1
+    })
+end
+
+function Process(req)
+    -- [[ Creates the output. ]]
+    --local str = InText:GetValue(req).Value
+    local out = Text( self.Comp.Filename )
+    OutText:Set(req, out)
+end
