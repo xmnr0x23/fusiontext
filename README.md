@@ -24,6 +24,8 @@ FusionText is a node based string library for Blackmagic Design Fusion.
 - `textformat.fuse`: Fuse to format strings in a template string.
 - `textlength.fuse`: Fuse to return the length of a string.
 - `textlstrip.fuse`: Fuse to remove a leading substring of a string.
+- `textorderreverse.fuse`: Fuse to reverse the order of a string.
+- `textordershuffle.fuse`: Fuse to shuffle the order of a string.
 - `textreplace.fuse`: Fuse to replace a substring of a string.
 - `textrstrip.fuse`: Fuse to remove a trailing substring of a string.
 - `textsub.fuse`: Fuse to return a substring of a string.
