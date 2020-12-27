@@ -1,0 +1,210 @@
+--[[--
+Splice.fuse
+
+Splices upstream inputs together
+
+Thanks Bryan and Stefan for figuring out dynamic multiple inputs
+
+----------------------------------------------------------------------
+Copyright (c) 2019, Pieter Van Houte <pieter@secondman.com>
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+----------------------------------------------------------------------
+
+version 0.1,  2019-10-29: proof of concept
+--]]--
+
+version = "0.1"
+
+FuRegisterClass("Splice", CT_Tool, {
+	REGS_Name = "Splice",
+	REGS_Category = "Composite",
+	REGS_OpIconString = "Spl",
+	REGS_OpDescription = "Splice multiple Clips together automagically",
+	REGS_Company = "Pieter Van Houte",
+	REGS_URL = "http://www.steakunderwater.com/wesuckless",
+	REG_OpNoMask = true,
+	REG_NoCommonCtrls = true,
+	REG_TimeVariant     = true,		-- required to disable caching of the current time parameter
+	REGB_Temporal 		= true,			-- ensures reliability in Resolve
+	REG_NoPreCalcProcess = true,	-- let Process() handle the PreCalcProcess() stuff as well
+--	REG_Fuse_NoEdit = true,
+--	REG_Fuse_NoReload = true,
+	REG_SupportsDoD = true,
+	REG_Version = 010,
+	})
+	
+function Create()
+	InWhich = self:AddInput("Which", "Which", {
+		LINKID_DataType = "Number",
+		INPID_InputControl = "SliderControl",
+		INP_MinAllowed = 1,
+		INP_MaxAllowed = 64, 	-- This input is leftover from the Switch Fuse upon which parts of this
+		INP_MaxScale = 1,		-- Fuse are based. It is necessary for OnConnected() to work properly.
+		INP_Integer = true,
+		IC_Steps = 1.0,
+		IC_Visible = false,
+	})
+
+	InInput1 = self:AddInput("Input1", "Input1", {
+		LINKID_DataType = "Image",
+		LINK_Main       = 1,
+		INP_Required    = false,
+		INP_SendRequest = false,	-- don't send a request for this branch before we actually need it.
+		})
+
+	OutImage = self:AddOutput("Output", "Output", {
+		LINKID_DataType = "Image",
+		LINK_Main = 1,
+		})
+end
+
+function CountInputs()
+	local highestInput = 1
+	for i = 2, 64 do
+		if self:FindInput("Input"..tostring(i)) ~= nil then
+			highestInput = i
+		end
+	end
+	return highestInput
+end
+
+
+function OnAddToFlow()
+--	print("OnAddToFlow:")
+--	print("   INP_MaxAllowed = ", InWhich:GetAttr("INP_MaxAllowed"))
+	-- If a comp is reopened, we need to recreate all inputs that might have
+	-- been saved. The weird thing is, that FindInput tells us that an input
+	-- exists while it's not visible in the GUI. So we just call AddInput
+	-- again, which will make the triangle show up in the GUI.
+	-- A problem arises if, for example, inputs 1 and 3 are connected, but 2
+	-- isn't. Since Input2 won't be saved in the comp we first need to look
+	-- for the highest input we need. Afterwards, OnConnected() will be called
+	-- for each of the saved inputs. The additional input needed to connect
+	-- further images will be created there.
+
+	local highestInput = CountInputs()
+	
+	for i = 2, highestInput do
+		self:AddInput("Input"..i, "Input"..i, {
+			LINKID_DataType = "Image",
+			LINK_Main = i,
+			INP_Required = false,
+			INP_SendRequest = false,
+			})
+--		print("Input"..i.." recreated")
+	end
+	InWhich:SetAttrs({INP_MaxScale = highestInput, INP_MaxAllowed = highestInput})
+end
+
+
+-- OnConnected gets called whenever a connection is made to the inputs. A new
+-- input is created if something has been connected to the highest input.
+function OnConnected(inp, old, new)
+	local inpNr = tonumber(string.match(inp:GetAttr("LINKS_Name"), "Input(%d+)"))
+	local maxNr = tonumber(InWhich:GetAttr("INP_MaxAllowed"))
+--	print(_getattr(out, _findte("LINK_Main", TagMap[out.RegNode.m_ID].Create)))
+--	print("OnConnected:\n   inpNr = ",inpNr)
+--	print("   INP_MaxAllowed = ",maxNr)
+	if inpNr then
+		if inpNr >= maxNr and maxNr < 64 and new ~= nil then
+--			print("   create new input!")
+			InWhich:SetAttrs({INP_MaxScale = inpNr, INP_MaxAllowed = inpNr})
+			self:AddInput("Input"..(inpNr + 1), "Input"..(inpNr + 1), {
+				LINKID_DataType = "Image",
+				LINK_Main = (inpNr + 1),
+				INP_Required = false,
+				INP_SendRequest = false,
+				})
+		end
+	end
+end
+
+
+
+function Process(req)
+
+	local which = 1
+	
+	local fusion = Fusion()
+  local comp = fusion.CurrentComp
+	local globalstart = comp:GetAttrs().COMPN_GlobalStart
+  local tool = comp:FindTool(self.Name)
+	
+	local inputstable = {}
+	
+	-- go through all the inputs to get the input ID, startframe, end frame and range, and store those in a nested table 
+	for i = 1, CountInputs()-1 do
+		local currentinput = tool:FindMainInput(i)
+		if currentinput:GetConnectedOutput() ~= nil then
+			local connectedtool = currentinput:GetConnectedOutput():GetTool()
+			local connectedtoolstart = math.floor(connectedtool:GetAttrs().TOOLNT_Region_Start[1])
+			local connectedtoolend = math.floor(connectedtool:GetAttrs().TOOLNT_Region_End[1])
+--			print(connectedtoolstart)
+--			print(connectedtoolend)
+			inputstable[#inputstable+1] = { ["input"] = i, ["start"] = connectedtoolstart, ["end"] = connectedtoolend, ["range"] = connectedtoolend - connectedtoolstart + 1}
+		end
+	end
+	
+	local validrange = 0
+	
+	
+	-- calculate the length of the valid range across all inputs
+	for i, v in ipairs(inputstable) do
+		validrange = validrange + inputstable[i]["range"]
+	end
+	
+--	print ("valid range= "..validrange)
+	
+--	dump(inputstable)
+	
+	local currenttime = req.Time
+	local fetchinput = 0
+	local range = 0
+	local fetchframe = 0
+	local timevalid = false
+	
+	while currenttime - globalstart >= range and currenttime - globalstart < validrange do
+		timevalid = true
+		fetchframe = currenttime - globalstart - range + inputstable[fetchinput+1]["start"]
+		range = range + inputstable[fetchinput+1]["range"]
+		fetchinput = fetchinput + 1
+	end
+	
+--	print("range= "..range)
+--	print("fetchinput= "..fetchinput)
+--	print("connected tool input= "..inputstable[fetchinput]["input"])
+--	print("fetchframe= "..fetchframe)
+
+	if timevalid == true then inp = self:FindInput("Input"..inputstable[fetchinput]["input"]) end
+	
+	if inp ~= nil then
+		local img = inp:GetSource(fetchframe, req:GetFlags())
+		if img ~= nil then
+			if req:IsPreCalc() then
+				local img_precalc = Image({IMG_Like = img, IMG_NoData = true})
+				OutImage:Set(req, img_precalc)
+			else
+				OutImage:Set(req, img)
+			end
+		end
+	end
+end
+
