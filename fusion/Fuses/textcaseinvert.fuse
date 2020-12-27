@@ -13,7 +13,7 @@ FuRegisterClass(FUSE_NAME, CT_Tool, {
     REG_NoCommonCtrls = true,
     REGS_Category = "Vonk\\Text",
     REGS_Name = FUSE_NAME,
-    REGS_OpDescription = "Converts the case of a Fusion Text object to upper.",
+    REGS_OpDescription = "Inverts the case of a Fusion Text object.",
     REGS_OpIconString = FUSE_NAME
 })
 
