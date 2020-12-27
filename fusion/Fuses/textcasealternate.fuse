@@ -1,7 +1,7 @@
 -- ============================================================================
 -- constants
 -- ============================================================================
-FUSE_NAME = "TextCaseTitle"
+FUSE_NAME = "TextCaseAlternate"
 DATATYPE = "Text"
 
 -- ============================================================================
@@ -13,7 +13,7 @@ FuRegisterClass(FUSE_NAME, CT_Tool, {
     REG_NoCommonCtrls = true,
     REGS_Category = "Vonk\\Text",
     REGS_Name = FUSE_NAME,
-    REGS_OpDescription = "Converts the case of a Fusion Text object to title.",
+    REGS_OpDescription = "Inverts the case of a Fusion Text object.",
     REGS_OpIconString = FUSE_NAME
 })
 
@@ -41,8 +41,22 @@ function Create()
     })
 end
 
-function case_title( first , rest )
-   return first:upper() .. rest:lower()
+function case_alternate( word )
+    local str_alternate = ""
+
+    for i = 1, #word do
+        local letter = word:sub( i , i )
+        if ( i % 2 == 0) then
+            -- even
+            letter = letter:upper()
+        else
+            -- odd
+            letter = letter:lower()
+        end
+        str_alternate = str_alternate .. letter
+    end
+
+    return str_alternate
 end
 
 function NotifyChanged(inp, param, time)
@@ -69,8 +83,8 @@ function Process(req)
     -- [[ Creates the output. ]]
     local str = InText:GetValue(req).Value
 
-    local str_title = str:gsub( "(%a)([%w_']*)" , case_title )
-    local out = Text( str_title )
+    local str_alternate = str:gsub( "(%w+)" , case_alternate )
+    local out = Text( str_alternate )
 
     OutText:Set( req , out )
 end
