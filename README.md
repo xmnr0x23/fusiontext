@@ -20,6 +20,8 @@ FusionText is a node based string library for Blackmagic Design Fusion.
 - `textcaselower.fuse`: Fuse to change the case of a Fusion Text object to lower.
 - `textcasetitle.fuse`: Fuse to change the case of a Fusion Text object to title.
 - `textcaseupper.fuse`: Fuse to change the case of a Fusion Text object to upper.
+- `textcompfilename.fuse`: Fuse that returns the full path of a comp.
+- `textcompname.fuse`: Fuse that returns the name of the comp.
 - `textcreate.fuse`: Fuse to create a Fusion Text object.
 - `textfromarray.fuse`: Fuse to create a Fusion Text object from an array.
 - `textfromnumber.fuse`: Fuse to convert a number to text.
