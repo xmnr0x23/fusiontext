@@ -41,68 +41,14 @@ function Create()
     })
 end
 
-local chance = {}
-chance.core = {}
-chance.basic = {}
-
-function chance.core.random(m, n)
-    if m ~= nil then
-        if n ~= nil then
-            if n <= m then
-                return m
-            else
-                return math.random(m, n)
-            end
-        else
-            return math.random(m)
-        end
-    end
-    return math.random()
-end
-
-function chance.basic.bool(flags)
-    local result = chance.core.random(100)
-
-    if flags then
-        return result <= flags["probability"]
-    else
-        return result <= 50
-    end
-end
-
-function chance_bool()
+function random_bool()
     local result = math.random( 100 )
 
     return result <= 50
 end
 
-function case_random( word )
-    local str_random = ""
-
-    for i = 1, #word do
-        local letter = word:sub( i , i )
-        if chance.basic.bool() then
-            letter = letter:upper()
-        else
-            letter = letter:lower()
-        end
-        str_random = str_random .. letter
-    end
-
-    return str_random
-end
-
-function case_random2( letter )
-    if chance.basic.bool() then
-        letter = letter:upper()
-    else
-        letter = letter:lower()
-    end
-    return letter
-end
-
-function case_random3( letter )
-    if chance_bool() then
+function case_random( letter )
+    if random_bool() then
         letter = letter:upper()
     else
         letter = letter:lower()
@@ -134,9 +80,7 @@ function Process(req)
     -- [[ Creates the output. ]]
     local str = InText:GetValue(req).Value
 
-    --local str_random = str:gsub( "(%w+)" , case_random )
-    --local str_random = str:gsub( "." , case_random2 )
-    local str_random = str:gsub( "." , case_random3 )
+    local str_random = str:gsub( "." , case_random )
     local out = Text( str_random )
 
     OutText:Set( req , out )
