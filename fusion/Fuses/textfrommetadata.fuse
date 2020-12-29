@@ -1,0 +1,110 @@
+-- ============================================================================
+-- constants
+-- ============================================================================
+FUSE_NAME = "TextFromMetadata"
+DATATYPE = "Text"
+
+-- ============================================================================
+-- fuse
+-- ============================================================================
+FuRegisterClass(FUSE_NAME, CT_Tool, {
+    REGID_DataType = DATATYPE,
+    REGID_InputDataType = DATATYPE,
+    REG_NoCommonCtrls = true,
+    REGS_Category = "Vonk\\Text",
+    REGS_Name = FUSE_NAME,
+    REGS_OpDescription = "Creates a Fusion Text object from metadata.",
+    REGS_OpIconString = FUSE_NAME
+})
+
+-- ============================================================================
+-- modules
+-- ============================================================================
+local json = self and require( "dkjson" ) or nil
+
+function Create()
+    -- Remove the default "Controls" page from the Fuse GUI
+    --self:RemoveControlPage( "Controls" )
+
+    -- Add a new "File" page to the Fuse GUI
+    --self:AddControlPage( "File" )
+
+    InImage = self:AddInput(
+        "Input",
+        "Input",
+        {
+            LINKID_DataType = "Image",
+            --INPID_InputControl = "ImageControl",
+            LINK_Main = 1,
+            --LINK_Visible = false,
+        }
+    )
+
+    InKey = self:AddInput(
+        "Key",
+        "Key",
+        {
+            LINKID_DataType = "Text",
+            INPID_InputControl = "TextEditControl",
+            TEC_Lines = 1,
+            --ICD_Width = 0.8,
+            LINK_Main = 2,
+        }
+    )
+
+    InShowInput = self:AddInput("Show Input", "ShowInput", {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "CheckboxControl",
+        INP_Integer = true,
+        INP_Default = 0.0,
+        INP_External = false,
+        INP_DoNotifyChanged = true
+    })
+
+    -- The output node connection where data is pushed out of the fuse
+    OutText = self:AddOutput(
+        "Output",
+        "Output",
+        {
+            LINKID_DataType = "Text",
+            LINK_Main = 1,
+        }
+    )
+end
+
+function NotifyChanged(inp, param, time)
+    --[[
+        Handles all input control events.
+
+        :param inp: Input that triggered a signal.
+        :type inp: Input
+
+        :param param: Parameter object holding the (new) value.
+        :type param: Parameter
+
+        :param time: Current frame number.
+        :type time: float
+    ]]
+    if inp == InShowInput then
+        local visible
+        if param.Value == 1.0 then visible = true else visible = false end
+        InImage:SetAttrs({LINK_Visible = visible})
+        InKey:SetAttrs({LINK_Visible = visible})
+    end
+end
+
+-- The OnAddToFlow() function is automatically run when the a new fuse node is added to the comp, or when the .comp file is opened up.
+function OnAddToFlow()
+end
+
+function Process( req )
+    -- [[ Creates the output. ]]
+    local image_in = InImage:GetValue( req )
+    local meta_key = InKey:GetValue( req ).Value
+
+    -- get value from metadata
+    local meta_value = image_in.Metadata[meta_key]
+    local out = Text( meta_value )
+
+    OutText:Set( req , out )
+end
