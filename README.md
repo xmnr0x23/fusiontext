@@ -30,6 +30,7 @@ FusionText is a node based string library for Blackmagic Design Fusion.
 - `textdecodeurl.fuse`: Fuse to url-decode a Fusion Text object.
 - `textencodeurl.fuse`: Fuse to url-encode a Fusion Text object.
 - `textfromarray.fuse`: Fuse to create a Fusion Text object from an array.
+- `textfromfile.fuse`: Fuse to create a Fusion Text object from a file.
 - `textfrommetadata.fuse`: Fuse to create a Fusion Text object from metadata.
 - `textfromnumber.fuse`: Fuse to convert a number to text.
 - `textjoin.fuse`: Fuse to join strings together into one.
