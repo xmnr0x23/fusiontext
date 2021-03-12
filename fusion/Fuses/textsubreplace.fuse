@@ -6,7 +6,7 @@ local textutils = self and require("textutils") or nil
 -- ============================================================================
 -- constants
 -- ============================================================================
-FUSE_NAME = "TextLength"
+FUSE_NAME = "TextSubReplace"
 DATATYPE = "Text"
 
 -- ============================================================================
@@ -16,9 +16,9 @@ FuRegisterClass(FUSE_NAME, CT_Tool, {
     REGID_DataType = DATATYPE,
     REGID_InputDataType = DATATYPE,
     REG_NoCommonCtrls = true,
-    REGS_Category = "Vonk\\Text\\Utility",
+    REGS_Category = "Vonk\\Text\\Substring",
     REGS_Name = FUSE_NAME,
-    REGS_OpDescription = "Returns the length of a string.",
+    REGS_OpDescription = "Replaces substrings of a string.",
     REGS_OpIconString = FUSE_NAME
 })
 
@@ -29,8 +29,22 @@ function Create()
         LINK_Main = 1
     })
 
+    InPattern = self:AddInput("Pattern", "Pattern", {
+        LINKID_DataType = "Text",
+        INPID_InputControl = "TextEditControl",
+        TEC_Lines = 1,
+        ICD_Width = 1 / 2
+    })
+
+    InReplace = self:AddInput("Replace", "Replace", {
+        LINKID_DataType = "Text",
+        INPID_InputControl = "TextEditControl",
+        TEC_Lines = 1,
+        ICD_Width = 1 / 2
+    })
+
     OutText = self:AddOutput("Output" , "Output" , {
-        LINKID_DataType = "Number",
+        LINKID_DataType = "Text",
         LINK_Main = 1
     })
 end
@@ -38,6 +52,11 @@ end
 function Process(req)
     -- [[ Creates the output. ]]
     local text = InText:GetValue(req).Value
-    local length = textutils.len(text)
-    OutText:Set(req, Number(length))
+    local pattern = InPattern:GetValue(req).Value
+    local repl = InReplace:GetValue(req).Value
+
+    local replaced = textutils.replace(text, pattern, repl)
+    local out = Text(replaced)
+
+    OutText:Set(req, out)
 end

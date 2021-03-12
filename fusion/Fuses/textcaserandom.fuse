@@ -11,7 +11,7 @@ FuRegisterClass(FUSE_NAME, CT_Tool, {
     REGID_DataType = DATATYPE,
     REGID_InputDataType = DATATYPE,
     REG_NoCommonCtrls = true,
-    REGS_Category = "Vonk\\Text",
+    REGS_Category = "Vonk\\Text\\Case",
     REGS_Name = FUSE_NAME,
     REGS_OpDescription = "Changes the case of a Fusion Text object in a random fashion.",
     REGS_OpIconString = FUSE_NAME

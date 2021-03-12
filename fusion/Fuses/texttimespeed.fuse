@@ -1,7 +1,7 @@
 -- ============================================================================
 -- constants
 -- ============================================================================
-FUSE_NAME = "TextEncodeUrl"
+FUSE_NAME = "TextTimeSpeed"
 DATATYPE = "Text"
 
 -- ============================================================================
@@ -11,47 +11,52 @@ FuRegisterClass(FUSE_NAME, CT_Tool, {
     REGID_DataType = DATATYPE,
     REGID_InputDataType = DATATYPE,
     REG_NoCommonCtrls = true,
-    REGS_Category = "Vonk\\Text\\Encode",
+    REGS_Category = "Vonk\\Text\\Temporal",
     REGS_Name = FUSE_NAME,
-    REGS_OpDescription = "URL-encodes a Fusion Text object.",
+    REGS_OpDescription = "Time based operation on text.",
     REGS_OpIconString = FUSE_NAME
 })
 
 function Create()
     -- [[ Creates the user interface. ]]
-    InText = self:AddInput("Text" , "Text" , {
+    InText = self:AddInput("Input" , "Input" , {
         LINKID_DataType = "Text",
-        INPID_InputControl = "TextEditControl",
-        TEC_Lines = 1,
-        LINK_Main = 1,
+        INP_SendRequest = false,
+        INP_Required = false,
+        LINK_Main = 1
+    })
+
+    InSpeed = self:AddInput("Speed" , "Speed" , {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "ScrewControl",
+        INP_MinScale = -100.0,
+        INP_MaxScale = 100.0,
+        INP_Default = 0.0,
+        LINK_Main = 2
+    })
+
+    InDelay = self:AddInput("Delay" , "Delay" , {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "ScrewControl",
+        INP_MinScale = -100.0,
+        INP_MaxScale = 100.0,
+        INP_Default = 0.0,
+        LINK_Main = 3
     })
 
     InShowInput = self:AddInput("Show Input", "ShowInput", {
         LINKID_DataType = "Number",
         INPID_InputControl = "CheckboxControl",
         INP_Integer = true,
-        INP_Default = 0.0,
+        INP_Default = 1.0,
         INP_External = false,
         INP_DoNotifyChanged = true
     })
-    
+
     OutText = self:AddOutput("Output" , "Output" , {
         LINKID_DataType = "Text",
         LINK_Main = 1
     })
-end
-
-function encode_numerical_code( character )
-    return ("%%%02X"):format( string.byte( character ) )
-end
-
-function url_encode( text )
-    if text then
-        text = text:gsub( "\n"               , "\r\n"                )
-        text = text:gsub( "([^%w %-%_%.%~])" , encode_numerical_code )
-        text = text:gsub( " "                , "+"                   )
-    end
-    return text
 end
 
 function NotifyChanged(inp, param, time)
@@ -70,16 +75,19 @@ function NotifyChanged(inp, param, time)
     if inp == InShowInput then
         local visible
         if param.Value == 1.0 then visible = true else visible = false end
-        InText:SetAttrs({LINK_Visible = visible})
+        InTime:SetAttrs({LINK_Visible = visible})
     end
 end
 
 function Process(req)
     -- [[ Creates the output. ]]
-    local str = InText:GetValue(req).Value
+    local t_current = self.Comp.CurrentTime
+    local t_globalstart = self.Comp.GlobalStart
+    local t_speed = InSpeed:GetValue(req).Value
+    local t_delay = InDelay:GetValue(req).Value
 
-    local str_encode_url = url_encode( str )
-    local out = Text( str_encode_url )
+    local t = ( ( ( t_current - t_delay ) - t_globalstart ) * t_speed ) + t_globalstart
+    local out = InText:GetSource(t, req:GetFlags())
 
-    OutText:Set( req , out )
+    OutText:Set(req, out)
 end

@@ -16,7 +16,7 @@ FuRegisterClass(FUSE_NAME, CT_Tool, {
     REGID_DataType = DATATYPE,
     REGID_InputDataType = DATATYPE,
     REG_NoCommonCtrls = true,
-    REGS_Category = "Vonk\\Text",
+    REGS_Category = "Vonk\\Text\\Create",
     REGS_Name = FUSE_NAME,
     REGS_OpDescription = "Creates Text from an array.",
     REGS_OpIconString = FUSE_NAME

@@ -11,7 +11,7 @@ FuRegisterClass(FUSE_NAME, CT_Tool, {
     REGID_DataType = DATATYPE,
     REGID_InputDataType = DATATYPE,
     REG_NoCommonCtrls = true,
-    REGS_Category = "Vonk\\Text",
+    REGS_Category = "Vonk\\Text\\Case",
     REGS_Name = FUSE_NAME,
     REGS_OpDescription = "Inverts the case of a Fusion Text object.",
     REGS_OpIconString = FUSE_NAME

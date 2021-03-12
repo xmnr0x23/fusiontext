@@ -1,7 +1,12 @@
 -- ============================================================================
+-- modules
+-- ============================================================================
+local textutils = self and require("textutils") or nil
+
+-- ============================================================================
 -- constants
 -- ============================================================================
-FUSE_NAME = "TextEncodeUrl"
+FUSE_NAME = "TextSubReturn"
 DATATYPE = "Text"
 
 -- ============================================================================
@@ -11,47 +16,57 @@ FuRegisterClass(FUSE_NAME, CT_Tool, {
     REGID_DataType = DATATYPE,
     REGID_InputDataType = DATATYPE,
     REG_NoCommonCtrls = true,
-    REGS_Category = "Vonk\\Text\\Encode",
+    REGS_Category = "Vonk\\Text\\Substring",
     REGS_Name = FUSE_NAME,
-    REGS_OpDescription = "URL-encodes a Fusion Text object.",
+    REGS_OpDescription = "Returns a substring of a string.",
     REGS_OpIconString = FUSE_NAME
 })
 
 function Create()
     -- [[ Creates the user interface. ]]
-    InText = self:AddInput("Text" , "Text" , {
+    InText = self:AddInput("Text", "Text", {
         LINKID_DataType = "Text",
-        INPID_InputControl = "TextEditControl",
+        LINK_Main = 1
+    })
+
+    InStart = self:AddInput("Start", "Start", {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "SliderControl",
+        INP_Integer = true,
         TEC_Lines = 1,
-        LINK_Main = 1,
+        --ICD_Width = 0.5,
+        INP_MinScale = 1,
+        INP_MaxScale = 100,
+        INP_Default = 1,
+        LINK_Main = 2,
+    })
+
+    InEnd = self:AddInput("End", "End", {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "SliderControl",
+        INP_Integer = true,
+        TEC_Lines = 1,
+        --ICD_Width = 0.5,
+        INP_MinScale = -100,
+        INP_MaxScale = -1,
+        INP_Default = -1,
+        IC_Steps = 1,
+        LINK_Main = 3,
     })
 
     InShowInput = self:AddInput("Show Input", "ShowInput", {
         LINKID_DataType = "Number",
         INPID_InputControl = "CheckboxControl",
         INP_Integer = true,
-        INP_Default = 0.0,
+        INP_Default = 1.0,
         INP_External = false,
         INP_DoNotifyChanged = true
     })
-    
+
     OutText = self:AddOutput("Output" , "Output" , {
         LINKID_DataType = "Text",
         LINK_Main = 1
     })
-end
-
-function encode_numerical_code( character )
-    return ("%%%02X"):format( string.byte( character ) )
-end
-
-function url_encode( text )
-    if text then
-        text = text:gsub( "\n"               , "\r\n"                )
-        text = text:gsub( "([^%w %-%_%.%~])" , encode_numerical_code )
-        text = text:gsub( " "                , "+"                   )
-    end
-    return text
 end
 
 function NotifyChanged(inp, param, time)
@@ -71,15 +86,19 @@ function NotifyChanged(inp, param, time)
         local visible
         if param.Value == 1.0 then visible = true else visible = false end
         InText:SetAttrs({LINK_Visible = visible})
+        InStart:SetAttrs({LINK_Visible = visible})
+        InEnd:SetAttrs({LINK_Visible = visible})
     end
 end
 
 function Process(req)
     -- [[ Creates the output. ]]
-    local str = InText:GetValue(req).Value
+    local text = InText:GetValue(req).Value
+    local s = InStart:GetValue(req).Value or 1
+    local e = InEnd:GetValue(req).Value or -1
 
-    local str_encode_url = url_encode( str )
-    local out = Text( str_encode_url )
+    local text = textutils.sub(text, s, e)
+    local out = Text(text)
 
-    OutText:Set( req , out )
+    OutText:Set(req, out)
 end

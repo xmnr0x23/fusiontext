@@ -1,0 +1,159 @@
+-- ============================================================================
+-- constants
+-- ============================================================================
+FUSE_NAME = "TextSwitch"
+DATATYPE = "Text"
+
+-- ============================================================================
+-- fuse
+-- ============================================================================
+FuRegisterClass(FUSE_NAME, CT_Tool, {
+    REGID_DataType = DATATYPE,
+    REGID_InputDataType = DATATYPE,
+    REG_NoCommonCtrls = true,
+    REGS_Category = "Vonk\\Text\\Flow",
+    REGS_Name = FUSE_NAME,
+    REGS_OpDescription = "Changes the case of a Fusion Text object in a random fashion.",
+    REGS_OpIconString = FUSE_NAME
+})
+    
+function Create()
+    InWhich = self:AddInput(
+        "Which",
+        "Which",
+        {
+            LINKID_DataType    = "Number",
+            INPID_InputControl = "SliderControl",
+            INP_MinAllowed     = 1,
+            INP_MaxAllowed     = 64,
+            INP_MaxScale       = 1,
+            INP_Integer        = true,
+            IC_Steps           = 1.0,
+        }
+    )
+
+    InInput1 = self:AddInput(
+        "Input1",
+        "Input1",
+        {
+            LINKID_DataType = DATATYPE,
+            LINK_Main       = 1,
+            INP_Required    = false,
+            INP_SendRequest = false,	-- don't send a request for this branch before we actually need it.
+        }
+    )
+
+    -- InShowInput = self:AddInput(
+        -- "Show Input",
+        -- "ShowInput",
+        -- {
+            -- LINKID_DataType = "Number",
+            -- INPID_InputControl = "CheckboxControl",
+            -- INP_Integer = true,
+            -- INP_Default = 0.0,
+            -- INP_External = false,
+            -- INP_DoNotifyChanged = true
+        -- }
+    -- )
+    
+    OutText = self:AddOutput(
+        "Output",
+        "Output",
+        {
+            LINKID_DataType = DATATYPE,
+            LINK_Main = 1,
+        }
+    )
+end
+
+
+function OnAddToFlow()
+--	print("OnAddToFlow:")
+--	print("   INP_MaxAllowed = ", InWhich:GetAttr("INP_MaxAllowed"))
+    -- If a comp is reopened, we need to recreate all inputs that might have
+    -- been saved. The weird thing is, that FindInput tells us that an input
+    -- exists while it's not visible in the GUI. So we just call AddInput
+    -- again, which will make the triangle show up in the GUI.
+    -- A problem arises if, for example, inputs 1 and 3 are connected, but 2
+    -- isn't. Since Input2 won't be saved in the comp we first need to look
+    -- for the highest input we need. Afterwards, OnConnected() will be called
+    -- for each of the saved inputs. The additional input needed to connect
+    -- further images will be created there.
+    local highestInput = 1
+    for i = 2, 64 do
+        if self:FindInput("Input"..tostring(i)) ~= nil then
+            highestInput = i
+        end
+    end
+
+    for i = 2, highestInput do
+        self:AddInput("Input"..i, "Input"..i, {
+            LINKID_DataType = DATATYPE,
+            LINK_Main = i,
+            INP_Required = false,
+            INP_SendRequest = false,
+            })
+--		print("Input"..i.." recreated")
+    end
+    InWhich:SetAttrs({INP_MaxScale = highestInput, INP_MaxAllowed = highestInput})
+end
+
+
+-- OnConnected gets called whenever a connection is made to the inputs. A new
+-- input is created if something has been connected to the highest input.
+function OnConnected(inp, old, new)
+    local inpNr = tonumber(string.match(inp:GetAttr("LINKS_Name"), "Input(%d+)"))
+    local maxNr = tonumber(InWhich:GetAttr("INP_MaxAllowed"))
+--	print("OnConnected:\n   inpNr = ",inpNr)
+--	print("   INP_MaxAllowed = ",maxNr)
+    if inpNr then
+        if inpNr >= maxNr and maxNr < 64 and new ~= nil then
+--			print("   create new input!")
+            InWhich:SetAttrs({INP_MaxScale = inpNr, INP_MaxAllowed = inpNr})
+            self:AddInput("Input"..(inpNr + 1), "Input"..(inpNr + 1), {
+                LINKID_DataType = DATATYPE,
+                LINK_Main = (inpNr + 1),
+                INP_Required = false,
+                INP_SendRequest = false,
+                })
+        end
+    end
+end
+
+-- function NotifyChanged(inp, param, time)
+    -- --[[
+        -- Handles all input control events.
+
+        -- :param inp: Input that triggered a signal.
+        -- :type inp: Input
+
+        -- :param param: Parameter object holding the (new) value.
+        -- :type param: Parameter
+
+        -- :param time: Current frame number.
+        -- :type time: float
+    -- ]]
+    -- if inp == InShowInput then
+        -- local visible
+        -- if param.Value == 1.0 then visible = true else visible = false end
+        -- InText:SetAttrs({LINK_Visible = visible})
+    -- end
+-- end
+
+function Process(req)
+    local which = InWhich:GetValue(req).Value
+    
+    inp = self:FindInput("Input"..which)
+    if inp ~= nil then
+        local img = inp:GetSource(req.Time, req:GetFlags())
+        if img ~= nil then
+            if req:IsPreCalc() then
+                local img_precalc = Image({IMG_Like = img, IMG_NoData = true})
+                OutText:Set(req, img_precalc)
+            else
+                OutText:Set(req, img)
+            end
+        end
+    end
+end
+

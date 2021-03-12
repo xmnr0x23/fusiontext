@@ -83,9 +83,12 @@ function Process(req)
     local text = InText:GetValue(req).Value
     local pattern = InPattern:GetValue(req).Value
     local replaced = textutils.split(text, pattern)
-    local array = json.encode(replaced)
+    --local array = json.encode(replaced)
+    local array = textutils.array_from_string(replaced)
     
-    dump(replaced)
+    --dump(textutils.array_from_string(replaced))
+    
+    --dump(replaced)
     local out = Text(array)
     --local out = Text("Test")
 
