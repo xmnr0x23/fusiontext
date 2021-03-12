@@ -29,22 +29,26 @@ FusionText is a node based string library for Blackmagic Design Fusion.
 - `textcreate.fuse`: Fuse to create a Fusion Text object.
 - `textdecodeurl.fuse`: Fuse to url-decode a Fusion Text object.
 - `textencodeurl.fuse`: Fuse to url-encode a Fusion Text object.
+- `textformat.fuse`: Fuse to format strings in a template string.
 - `textfromarray.fuse`: Fuse to create a Fusion Text object from an array.
 - `textfromfile.fuse`: Fuse to create a Fusion Text object from a file.
 - `textfrommetadata.fuse`: Fuse to create a Fusion Text object from metadata.
 - `textfromnumber.fuse`: Fuse to convert a number to text.
-- `textjoin.fuse`: Fuse to join strings together into one.
-- `textformat.fuse`: Fuse to format strings in a template string.
 - `textlength.fuse`: Fuse to return the length of a string.
-- `textlstrip.fuse`: Fuse to remove a leading substring of a string.
 - `textmultiline.fuse`: Fuse to concatenate individual Text strings into a multi-line Text object.
 - `textorderreverse.fuse`: Fuse to reverse the order of a string.
 - `textordershuffle.fuse`: Fuse to shuffle the order of a string.
-- `textreplace.fuse`: Fuse to replace a substring of a string.
-- `textrstrip.fuse`: Fuse to remove a trailing substring of a string.
-- `textsub.fuse`: Fuse to return a substring of a string.
+- `textsubformat.fuse`: Fuse to 
+- `textsubjoin.fuse`: Fuse to 
+- `textsubreplace.fuse`: Fuse to 
+- `textsubreturn.fuse`: Fuse to 
+- `textsubsplit.fuse`: Fuse to 
+- `textsubstripleft.fuse`: Fuse to 
+- `textsubstripright.fuse`: Fuse to 
+- `textswitch.fuse`: Fuse to 
+- `texttimespeed.fuse`: Fuse to 
 - `texttimestretch.fuse`: Fuse to execute time based operations on text.
-
+- `textwirelesslink.fuse`: Fuse to
 
 **Modules/Lua**
 
