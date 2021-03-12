@@ -1,3 +1,8 @@
+-- ============================================================================
+-- modules
+-- ============================================================================
+local json = self and require("dkjson") or nil
+
 -- module table
 textutils = {}
 
@@ -157,6 +162,22 @@ function textutils.split(text, pattern)
     end
 
     return elements
+end
+
+function textutils.array_from_string(lua_table)
+    --[[
+        Builds an array from a lua table
+
+        :param mat_str: Json string to build matrix object from.
+        :type mat_str: string
+
+        :rtype: matrix
+    ]]
+    local array ={}
+    array["array"] = lua_table
+    array["size"] = table.getn(lua_table)
+
+    return json.encode(array)
 end
 
 -- return module table
