@@ -1,0 +1,172 @@
+-- ============================================================================
+-- constants
+-- ============================================================================
+FUSE_NAME = "TextWirelessLink"
+DATATYPE = "Text"
+BTN_WIDTH = 0.33333
+
+-- ============================================================================
+-- fuse
+-- ============================================================================
+FuRegisterClass(FUSE_NAME, CT_Tool, {
+    REGID_DataType = DATATYPE,
+    REGID_InputDataType = DATATYPE,
+    REG_NoCommonCtrls = true,
+    REGS_Category = "Vonk\\Text\\Flow",
+    REGS_Name = FUSE_NAME,
+    REGS_OpDescription = "Reads a Text string from a file.",
+    REGS_OpIconString = FUSE_NAME
+})
+
+-- ============================================================================
+-- modules
+-- ============================================================================
+
+-- ============================================================================
+-- variables
+-- ============================================================================
+
+-- ============================================================================
+-- utils
+-- ============================================================================
+
+function Create()
+    --local datatype = "Image"                                            -- would love to make this dynamic somehow
+    local datatype = "Text"
+
+    GetColor = [[
+        tool.TileColor = tool.Input:GetConnectedOutput():GetTool().TileColor
+        tool.TextColor = tool.Input:GetConnectedOutput():GetTool().TextColor
+    ]]
+
+    GetName = [[
+        NewName = "wire_" .. tool.Input:GetConnectedOutput():GetTool():GetAttrs().TOOLS_Name
+        tool:SetAttrs( { TOOLS_Name = NewName } )
+    ]]
+
+    GetSource = [[
+        comp:SetActiveTool( tool.Input:GetConnectedOutput():GetTool() )
+    ]]
+
+    InData = self:AddInput(
+        "Input",
+        "Input",
+        {
+            LINKID_DataType = datatype,
+            INPID_InputControl = "ImageControl",
+            LINK_Visible = false,
+            --ICD_Width = 0.8,
+            LINK_Main = 1,                          -- if set, you lose the ability to instance the imagecontrol
+            --IMGCD_BoxWidth = 0.5,
+        }
+    )
+
+    InShowInput = self:AddInput("Show Input", "ShowInput", {
+        LINKID_DataType = "Number",
+        INPID_InputControl = "CheckboxControl",
+        INP_Integer = true,
+        INP_Default = 0.0,
+        INP_External = false,
+        INP_DoNotifyChanged = true
+    })
+
+    OutData = self:AddOutput(
+        "Output",
+        "Output",
+        {
+            LINKID_DataType = datatype,
+            LINK_Main = 1,
+        }
+    )
+
+    GetColorBtn = self:AddInput(
+        "Get Color",
+        "GetColorBtn",
+        {
+            INPID_InputControl = 'ButtonControl',
+            INP_External = false,
+            IC_Visible = true,
+            BTNCS_Execute = GetColor,
+            ICD_Width = BTN_WIDTH,
+            INP_Passive = true, -- don't want this to trigger a re-render, so on it goes.
+        }
+    )
+
+    GetNameBtn = self:AddInput(
+        "Get Name",
+        "GetNameBtn",
+        {
+            INPID_InputControl = 'ButtonControl',
+            INP_External = false,
+            IC_Visible = true,
+            BTNCS_Execute = GetName,
+            ICD_Width = BTN_WIDTH,
+            INP_Passive = true, -- don't want this to trigger a re-render, so on it goes.
+        }
+    )
+
+    GetSourceBtn = self:AddInput(
+        "Get Source",
+        "GetSourceBtn",
+        {
+            INPID_InputControl = "ButtonControl",
+            INP_External = false,
+            IC_Visible = true,
+            BTNCS_Execute = GetSource,
+            ICD_Width = BTN_WIDTH,
+            INP_Passive = true, -- don't want this to trigger a re-render, so on it goes.
+        }
+    )
+end
+
+-- =============================================================================
+-- main
+-- =============================================================================
+
+function NotifyChanged( inp , param , time )
+    --[[
+    Handles all input control events.
+
+    :param inp: input that triggered a signal
+    :type inp: Input
+
+    :param param: parameter object holding the (new) value
+    :type param: Parameter
+
+    :param time: current frame number
+    :type time: float
+    ]]
+
+    -- trigger callbacks
+    if inp ~= nil and param ~= nil then
+        if inp == InShowInput then
+            if param.Value == 1.0 then
+                InData:SetAttrs( { LINK_Visible = true } )
+            else
+                InData:SetAttrs( { LINK_Visible = false } )
+            end
+        end
+        -- if inp == InMode then                                            -- the idea is to change the datatype based on a menu selection
+            -- self:ConnectInput( "Input" , nil )                           -- doesn't work, can't disconnect the input (thought it was necessary when changing the datatype)
+            -- if param.Value == "Image" then
+                -- print( "Image" )
+                -- -- InData:SetAttrs( { LINKID_DataType = "Image" } )
+                -- -- OutData:SetAttrs( { LINKID_DataType = "Image" } )     -- throws an error
+            -- elseif param.Value == "Mask" then
+                -- print( "Mask" )
+            -- elseif param.Value == "3D" then
+                -- print( "3D" )
+            -- elseif param.Value == "Material" then
+                -- print( "Material" )
+            -- elseif param.Value == "Particles" then
+                -- print( "Particles" )
+            -- end
+        -- end
+    end
+end
+
+function Process( req )
+    local data = InData:GetValue( req )
+
+    OutData:Set( req , data )
+end
